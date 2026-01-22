@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import ServiceStatus from '../components/ServiceStatus'
 import TripPlanner, { type TripQuery } from '../components/TripPlanner'
-import QuickActions from '../components/QuickActions'
 import TripResults, { type TripResult } from '../components/TripResults'
 import Alerts from '../components/Alerts'
 import Departures from '../components/Departures'
@@ -50,7 +49,6 @@ export default function HomePage() {
     <>
       <ServiceStatus />
       <TripPlanner onSearch={handleSearch} />
-      <QuickActions />
       <TripResults items={results} />
       <Alerts />
       <Departures />

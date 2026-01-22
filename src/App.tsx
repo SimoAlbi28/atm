@@ -13,7 +13,9 @@ import LostAndFoundPage from './pages/LostAndFoundPage'
 import HelpPage from './pages/HelpPage'
 import FAQPage from './pages/FAQPage'
 import InfoPage from './pages/InfoPage'
+import ProfilePage from './pages/ProfilePage'
 import { useHashRoute } from './hooks/useHashRoute'
+import { AuthProvider } from './hooks/useAuth'
 
 export default function App() {
   const route = useHashRoute()
@@ -42,6 +44,8 @@ export default function App() {
         return <FAQPage />
       case '/info':
         return <InfoPage />
+      case '/profile':
+        return <ProfilePage />
       case '/':
       default:
         return <HomePage />
@@ -49,10 +53,12 @@ export default function App() {
   }
 
   return (
-    <div className="app">
-      <Header />
-      {renderRoute()}
-      <Footer />
-    </div>
+    <AuthProvider>
+      <div className="app">
+        <Header />
+        {renderRoute()}
+        <Footer />
+      </div>
+    </AuthProvider>
   )
 }
