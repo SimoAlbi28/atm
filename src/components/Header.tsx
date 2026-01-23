@@ -44,20 +44,21 @@ export default function Header() {
           <a href="#/help">Assistenza</a>
         </nav>
         <div className="header-right">
-          <a className="home-btn nav-btn" href="#/" onClick={() => { setOpen(false); setProfileOpen(false) }}>
-            Home
+          <a className="home-btn nav-btn" href="#/" onClick={() => { setOpen(false); setProfileOpen(false) }} aria-label="Home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </a>
           <div className="profile-wrap">
             <button
               className="profile-btn nav-btn"
               aria-expanded={profileOpen}
               aria-controls="profile-panel"
+              aria-label="Profilo"
               onClick={() => {
                 setOpen(false)
                 setProfileOpen(v => !v)
               }}
             >
-              Profilo
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </button>
             {profileOpen && (
               <div id="profile-panel" className="profile-panel card" role="dialog" aria-label="Area profilo">
@@ -147,7 +148,7 @@ export default function Header() {
               setOpen(v => !v)
             }}
           >
-            Menu
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
         </div>
       </div>

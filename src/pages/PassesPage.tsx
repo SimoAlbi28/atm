@@ -16,7 +16,6 @@ const ZONES = [
 
 const getPassesForZones = (selectedZones: string[]) => {
   const maxZone = Math.max(...selectedZones.map(z => parseInt(z.replace('Mi', ''))))
-  const minZone = Math.min(...selectedZones.map(z => parseInt(z.replace('Mi', ''))))
   
   const basePasses = []
   
@@ -185,7 +184,7 @@ export default function PassesPage() {
             }}>
               📍 Zone: {selectedZones.sort().join(', ')}
             </div>
-            <button className="secondary" onClick={handleReset} style={{ padding: '.5rem .75rem' }}>
+            <button className="secondary" onClick={handleReset} style={{ padding: '.5rem .75rem', color: '#dc2626', borderColor: '#fca5a5' }}>
               Cambia zone
             </button>
           </div>

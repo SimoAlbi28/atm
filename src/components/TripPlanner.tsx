@@ -60,7 +60,7 @@ export default function TripPlanner({ onSearch }: Props) {
             </div>
           </div>
           <button className="primary" type="submit">Cerca</button>
-          <button className="secondary" type="button" onClick={handleReset}>Reset</button>
+          <button className="secondary" type="button" onClick={handleReset} style={{ color: '#dc2626', borderColor: '#fca5a5' }}>Reset</button>
         </form>
       </div>
     </section>

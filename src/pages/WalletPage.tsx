@@ -1,5 +1,5 @@
 import Page from '../components/Page'
-import { useWallet, WalletItem } from '../hooks/useWallet'
+import { useWallet, type WalletItem } from '../hooks/useWallet'
 
 export default function WalletPage() {
   const { items } = useWallet()

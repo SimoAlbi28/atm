@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import ServiceStatus from '../components/ServiceStatus'
 import TripPlanner, { type TripQuery } from '../components/TripPlanner'
 import TripResults, { type TripResult } from '../components/TripResults'

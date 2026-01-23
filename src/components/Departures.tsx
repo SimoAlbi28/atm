@@ -126,9 +126,6 @@ function getDestinations(metroId: string, currentStop: string): string[] {
     // Linea con diramazioni
     const splitIndex = mainStops.indexOf(config.branches.splitAfter)
     
-    // Trova i capolinea delle diramazioni
-    const branchTerminals = config.branches.directions.map(dir => dir.stops[dir.stops.length - 1])
-    
     if (currentInMain !== -1) {
       // Siamo nel tratto principale
       
@@ -231,6 +228,12 @@ export default function Departures() {
     return results.sort((a, b) => a.minutes - b.minutes)
   }, [selectedMetro, selectedDirection])
 
+  const handleReset = () => {
+    setSelectedMetro('')
+    setSelectedStop('')
+    setSelectedDirection('')
+  }
+
   return (
     <section className="departures">
       <div className="container">
@@ -256,6 +259,11 @@ export default function Departures() {
               <option key={dir} value={dir}>→ {dir}</option>
             ))}
           </select>
+          {selectedMetro && (
+            <button className="secondary" onClick={handleReset} style={{ padding: '.5rem .75rem', color: '#dc2626', borderColor: '#fca5a5' }}>
+              Reset
+            </button>
+          )}
         </div>
         <ul className="departures-list">
           {departures.map((d) => (
