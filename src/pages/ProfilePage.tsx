@@ -1,8 +1,10 @@
 import Page from '../components/Page'
 import { useAuth } from '../hooks/useAuth'
+import { useWallet } from '../hooks/useWallet'
 
 export default function ProfilePage() {
   const { user, logout } = useAuth()
+  const { items } = useWallet()
 
   if (!user) {
     return (
@@ -40,6 +42,50 @@ export default function ProfilePage() {
             <li><strong>Ricevute:</strong> Scarica PDF degli ultimi 6 mesi</li>
           </ul>
         </div>
+      </div>
+      <div className="card" style={{ marginBottom: '.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '.75rem' }}>
+          <h3>💳 Il mio Wallet</h3>
+          {items.length > 0 && (
+            <a href="#/wallet" className="link" style={{ fontSize: '.85rem' }}>Vedi tutto ({items.length})</a>
+          )}
+        </div>
+        {items.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '1rem' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '.5rem' }}>💳</div>
+            <p className="tiny" style={{ marginBottom: '.75rem' }}>Il tuo wallet è vuoto</p>
+            <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href="#/tickets" className="primary" style={{ textDecoration: 'none', fontSize: '.85rem' }}>Acquista biglietti</a>
+              <a href="#/passes" className="secondary" style={{ textDecoration: 'none', fontSize: '.85rem' }}>Abbonamenti</a>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-3" style={{ gap: '.5rem' }}>
+            {items.slice(0, 3).map(item => (
+              <a 
+                key={item.id}
+                href={`#/wallet/${item.id}`} 
+                style={{ 
+                  textDecoration: 'none', 
+                  color: 'inherit',
+                  padding: '.75rem',
+                  background: 'var(--surface)',
+                  borderRadius: '8px',
+                  display: 'block'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.25rem' }}>
+                  <span>{item.type === 'ticket' ? '🎫' : '📱'}</span>
+                  <span style={{ fontWeight: 600, fontSize: '.85rem' }}>{item.name}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="tiny">{item.price}</span>
+                  <span style={{ background: '#dcfce7', color: '#166534', fontSize: '.65rem', padding: '.2rem .4rem', borderRadius: '4px' }}>Attivo</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
       </div>
       <div className="card" style={{ marginBottom: '.75rem' }}>
         <h3>Azioni rapide</h3>

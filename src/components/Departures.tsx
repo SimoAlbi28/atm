@@ -235,7 +235,7 @@ export default function Departures() {
     <section className="departures">
       <div className="container">
         <div className="section-header">
-          <h2>Prossime partenze</h2>
+          <h2>Prossime Partenze Metro</h2>
         </div>
         <div className="departures-search">
           <select value={selectedMetro} onChange={(e) => setSelectedMetro(e.target.value)} aria-label="Seleziona linea metro">
