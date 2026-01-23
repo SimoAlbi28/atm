@@ -20,13 +20,30 @@ export default function LinesPage() {
             <h3>Linee Metropolitane</h3>
             <div style={{ display: 'grid', gap: '.5rem', marginTop: '.5rem' }}>
               {metroLines.map((l) => (
-                <div key={l.name} style={{ display: 'flex', alignItems: 'center', gap: '.5rem', padding: '.5rem', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                <a 
+                  key={l.name} 
+                  href={`#/line/${l.name}`}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '.5rem', 
+                    padding: '.5rem', 
+                    border: '1px solid var(--border)', 
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    transition: 'all .2s ease'
+                  }}
+                  onMouseOver={e => e.currentTarget.style.borderColor = 'var(--brand)'}
+                  onMouseOut={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                >
                   <span className="badge line" style={{ background: l.color }}>{l.name}</span>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600 }}>{l.desc}</div>
                     <div className="tiny">Servizio: 6:00 - 00:30</div>
                   </div>
-                </div>
+                  <span style={{ color: 'var(--muted)' }}>→</span>
+                </a>
               ))}
             </div>
           </div>

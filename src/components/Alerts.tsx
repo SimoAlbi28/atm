@@ -9,18 +9,23 @@ export default function Alerts() {
           <h2 id="alerts-title">
             <span className="live-badge">LIVE</span> Aggiornamenti in tempo reale
           </h2>
-          <a href="#/alerts" className="link">Vedi tutti</a>
+          <a href="#/alerts" className="btn-tutti">Tutti</a>
         </div>
         <div className="list">
           {activeAlerts.map((a) => (
-            <article key={a.id} className="card alert">
+            <a 
+              key={a.id} 
+              href={`#/alert/${a.id}`}
+              className="card alert"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               <div className="alert-header">
                 <span className="badge line">{a.line}</span>
                 <span className="alert-time">{a.time}</span>
               </div>
               <h3>{a.title}</h3>
               <p>{a.text}</p>
-            </article>
+            </a>
           ))}
         </div>
       </div>

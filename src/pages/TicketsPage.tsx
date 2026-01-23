@@ -6,6 +6,7 @@ type Ticket = {
   id: string
   name: string
   price: string
+  detailId: string
 }
 
 type PurchaseStep = 'idle' | 'processing' | 'qr'
@@ -13,12 +14,12 @@ type PurchaseStep = 'idle' | 'processing' | 'qr'
 export default function TicketsPage() {
   const { user } = useAuth()
   const tickets: Ticket[] = useMemo(() => ([
-    { id: 't1', name: 'Urbano 90 min', price: '€ 2,20' },
-    { id: 't2', name: 'Giornaliero', price: '€ 7,60' },
-    { id: 't3', name: 'Carnet 10 corse', price: '€ 19,50' },
-    { id: 't4', name: 'Bigiornaliero', price: '€ 12,00' },
-    { id: 't5', name: 'Settimanale', price: '€ 17,00' },
-    { id: 't6', name: 'Extraurbano', price: 'da € 3,50' }
+    { id: 't1', name: 'Urbano 90 min', price: '€ 2,20', detailId: 'urbano-90' },
+    { id: 't2', name: 'Giornaliero', price: '€ 7,60', detailId: 'giornaliero' },
+    { id: 't3', name: 'Carnet 10 corse', price: '€ 19,50', detailId: 'carnet-10' },
+    { id: 't4', name: 'Bigiornaliero', price: '€ 12,00', detailId: 'bigiornaliero' },
+    { id: 't5', name: 'Settimanale', price: '€ 17,00', detailId: 'settimanale' },
+    { id: 't6', name: 'Extraurbano', price: 'da € 3,50', detailId: 'extraurbano' }
   ]), [])
 
   const [selected, setSelected] = useState<Ticket | null>(null)
@@ -70,9 +71,7 @@ export default function TicketsPage() {
     setQrDataUrl(null)
     setEmailSent(false)
     await new Promise(res => setTimeout(res, 2000))
-    const code = `ATM-${selected!.id}-${Date.now()}`
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'><rect width='320' height='320' fill='%23fff'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='18' fill='%23000'>${code}</text><rect x='20' y='20' width='80' height='80' fill='%23000'/><rect x='220' y='220' width='80' height='80' fill='%23000'/><rect x='150' y='150' width='40' height='40' fill='%23000'/></svg>`
-    setQrDataUrl(`data:image/svg+xml;utf8,${encodeURIComponent(svg)}`)
+    setQrDataUrl('/qr.png')
     setStep('qr')
   }
 
@@ -83,11 +82,14 @@ export default function TicketsPage() {
           <article key={t.id} className="card">
             <h3>{t.name}</h3>
             <p className="tiny">Pagamento immediato con QR utilizzabile subito.</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '.5rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '.5rem', alignItems: 'center', gap: '.5rem' }}>
               <span className="price">{t.price}</span>
-              <button className="primary" onClick={() => startPurchase(t)}>
-                Acquista
-              </button>
+              <div style={{ display: 'flex', gap: '.35rem' }}>
+                <a href={`#/ticket/${t.detailId}`} className="secondary" style={{ textDecoration: 'none', padding: '.5rem .7rem' }}>Info</a>
+                <button className="primary" onClick={() => startPurchase(t)}>
+                  Acquista
+                </button>
+              </div>
             </div>
           </article>
         ))}
@@ -96,35 +98,48 @@ export default function TicketsPage() {
       <div className="card" style={{ marginTop: '1rem' }} ref={formRef}>
         <h3>Pagamento e QR digitale</h3>
         {selected ? (
-          <form onSubmit={handleSubmit} className="form-grid">
+          <form onSubmit={handleSubmit} className="form-grid" autoComplete="off">
             <p className="tiny" style={{ marginBottom: '.5rem' }}>Stai acquistando: <strong>{selected.name}</strong> ({selected.price})</p>
             <div className="grid grid-2" style={{ gap: '.5rem' }}>
               <div className="field">
                 <label className="tiny">Intestatario carta</label>
-                <input className="input" value={cardName} onChange={e => setCardName(e.target.value)} placeholder="Nome e cognome" />
+                <input className="input" value={cardName} onChange={e => setCardName(e.target.value)} placeholder="Nome e cognome" autoComplete="off" />
               </div>
               <div className="field">
                 <label className="tiny">Email di invio</label>
-                <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" />
+                <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" autoComplete="off" />
               </div>
               <div className="field">
                 <label className="tiny">Numero carta</label>
-                <input className="input" value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="1234 5678 9012 3456" />
+                <input className="input" value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="1234 5678 9012 3456" autoComplete="off" />
               </div>
-              <div className="grid" style={{ gridTemplateColumns: '1fr 1fr 1fr', gap: '.5rem' }}>
+              <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '.5rem' }}>
                 <div className="field">
                   <label className="tiny">Scadenza</label>
-                  <input className="input" value={expiry} onChange={e => setExpiry(e.target.value)} placeholder="MM/AA" />
+                  <input 
+                    className="input" 
+                    value={expiry} 
+                    onChange={e => {
+                      let val = e.target.value.replace(/[^0-9]/g, '')
+                      if (val.length >= 2) {
+                        val = val.slice(0, 2) + '/' + val.slice(2, 4)
+                      }
+                      setExpiry(val.slice(0, 5))
+                    }} 
+                    placeholder="MM/AA" 
+                    autoComplete="off" 
+                    maxLength={5}
+                  />
                 </div>
                 <div className="field">
                   <label className="tiny">CVV</label>
-                  <input className="input" value={cvv} onChange={e => setCvv(e.target.value)} placeholder="123" />
+                  <input className="input" value={cvv} onChange={e => setCvv(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))} placeholder="123" autoComplete="off" maxLength={4} />
                 </div>
-                <div className="field" style={{ display: 'flex', alignItems: 'flex-end' }}>
-                  <button className="primary" type="submit" disabled={step === 'processing'}>
-                    {step === 'processing' ? 'Elaborazione...' : 'Paga e genera QR'}
-                  </button>
-                </div>
+              </div>
+              <div className="field" style={{ gridColumn: '1 / -1' }}>
+                <button className="primary" type="submit" disabled={step === 'processing'} style={{ width: '100%' }}>
+                  {step === 'processing' ? 'Elaborazione...' : 'Paga e genera QR'}
+                </button>
               </div>
             </div>
             {error && <p className="tiny" style={{ color: '#ef4444' }}>{error}</p>}

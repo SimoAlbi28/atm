@@ -20,7 +20,29 @@ export default function Header() {
   return (
     <header className="site-header">
       <div className="container header-row">
-        <div className="brand">ATM Milano</div>
+        <a href="#/" className="brand" onClick={() => { setOpen(false); setProfileOpen(false) }}>
+          <img src="/image.png" alt="ATM Milano" className="brand-logo" />
+        </a>
+        <nav
+          id="main-nav"
+          className={`main-nav ${open ? 'open' : ''}`}
+          onClick={() => {
+            setOpen(false)
+            setProfileOpen(false)
+          }}
+        >
+          <a href="#/tickets">Biglietti</a>
+          <a href="#/passes">Abbonamenti</a>
+          <a href="#/lines">Linee</a>
+          <a href="#/map">Mappa</a>
+          <a href="#/alerts">Avvisi</a>
+          <a href="#/parking">Parcheggi e ZTL</a>
+          <a href="#/access">Accessibilità</a>
+          <a href="#/lost">Oggetti smarriti</a>
+          <a href="#/faq">FAQ</a>
+          <a href="#/info">Info</a>
+          <a href="#/help">Assistenza</a>
+        </nav>
         <div className="header-right">
           <a className="home-btn nav-btn" href="#/" onClick={() => { setOpen(false); setProfileOpen(false) }}>
             Home
@@ -30,7 +52,10 @@ export default function Header() {
               className="profile-btn nav-btn"
               aria-expanded={profileOpen}
               aria-controls="profile-panel"
-              onClick={() => setProfileOpen(v => !v)}
+              onClick={() => {
+                setOpen(false)
+                setProfileOpen(v => !v)
+              }}
             >
               Profilo
             </button>
@@ -117,30 +142,13 @@ export default function Header() {
             aria-label="Apri menu"
             aria-expanded={open}
             aria-controls="main-nav"
-            onClick={() => setOpen(v => !v)}
+            onClick={() => {
+              setProfileOpen(false)
+              setOpen(v => !v)
+            }}
           >
             Menu
           </button>
-          <nav
-            id="main-nav"
-            className={`main-nav ${open ? 'open' : ''}`}
-            onClick={() => {
-              setOpen(false)
-              setProfileOpen(false)
-            }}
-          >
-            <a href="#/tickets">Biglietti</a>
-            <a href="#/passes">Abbonamenti</a>
-            <a href="#/lines">Linee</a>
-            <a href="#/map">Mappa</a>
-            <a href="#/alerts">Avvisi</a>
-            <a href="#/parking">Parcheggi e ZTL</a>
-            <a href="#/access">Accessibilità</a>
-            <a href="#/lost">Oggetti smarriti</a>
-            <a href="#/faq">FAQ</a>
-            <a href="#/info">Info</a>
-            <a href="#/help">Assistenza</a>
-          </nav>
         </div>
       </div>
     </header>

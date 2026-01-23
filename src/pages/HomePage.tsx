@@ -40,11 +40,6 @@ export default function HomePage() {
     setResults(mocked)
   }
 
-  useEffect(() => {
-    handleSearch({ from: 'Duomo', to: 'Centrale FS', when: 'now', time: new Date().toISOString().slice(11, 16) })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <>
       <ServiceStatus />

@@ -22,7 +22,12 @@ export default function AlertsPage() {
       </div>
       <div className="alerts-list">
         {filtered.map((a) => (
-          <article key={a.id} className={`card alert-detail ${a.status}`}>
+          <a 
+            key={a.id} 
+            href={`#/alert/${a.id}`}
+            className={`card alert-detail ${a.status}`}
+            style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+          >
             <div className="alert-header">
               <span className="badge line">{a.line}</span>
               <span className={`alert-status ${a.status}`}>
@@ -40,7 +45,7 @@ export default function AlertsPage() {
                 event: 'Evento'
               }[a.type]}</span>
             </div>
-          </article>
+          </a>
         ))}
       </div>
     </Page>

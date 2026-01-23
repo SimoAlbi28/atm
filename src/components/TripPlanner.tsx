@@ -12,14 +12,21 @@ type Props = {
 }
 
 export default function TripPlanner({ onSearch }: Props) {
-  const [from, setFrom] = useState('Duomo')
-  const [to, setTo] = useState('Centrale FS')
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
   const [when, setWhen] = useState<TripQuery['when']>('now')
   const [time, setTime] = useState<string>(new Date().toISOString().slice(11, 16))
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
     onSearch({ from, to, when, time })
+  }
+
+  function handleReset() {
+    setFrom('')
+    setTo('')
+    setWhen('now')
+    setTime(new Date().toISOString().slice(11, 16))
   }
 
   return (
@@ -53,6 +60,7 @@ export default function TripPlanner({ onSearch }: Props) {
             </div>
           </div>
           <button className="primary" type="submit">Cerca</button>
+          <button className="secondary" type="button" onClick={handleReset}>Reset</button>
         </form>
       </div>
     </section>
