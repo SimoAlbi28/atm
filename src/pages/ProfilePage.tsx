@@ -91,7 +91,7 @@ export default function ProfilePage() {
         <h3>Azioni rapide</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.5rem', marginTop: '.5rem' }}>
           <button className="primary">Rinnova abbonamento</button>
-          <button className="secondary">Aggiorna dati</button>
+          <a href="#/profile/edit" className="secondary" style={{ textDecoration: 'none', textAlign: 'center' }}>Aggiorna dati</a>
           <button className="secondary">Gestisci notifiche</button>
         </div>
       </div>

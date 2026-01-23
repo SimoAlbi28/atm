@@ -5,37 +5,34 @@ export default function Alerts() {
   return (
     <section className="alerts" aria-labelledby="alerts-title">
       <div className="container">
-        <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
-          <a 
-            href="#/alerts" 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '.75rem',
-              background: '#fef2f2',
-              border: '1px solid #fca5a5',
-              borderRadius: '12px',
-              padding: '1rem 1.5rem',
-              textDecoration: 'none',
-              color: '#dc2626',
-              fontWeight: 700,
-              fontSize: '1rem',
-              transition: 'all .2s ease'
-            }}
-          >
-            <span className="live-badge">LIVE</span>
-            Aggiornamenti in tempo reale
+        <div className="card" style={{ textAlign: 'center', padding: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.75rem', marginBottom: '.75rem' }}>
+            <span className="live-badge" style={{ whiteSpace: 'nowrap' }}>LIVE</span>
+            <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Aggiornamenti in tempo reale</h2>
             {activeCount > 0 && (
               <span style={{ 
                 background: '#dc2626', 
                 color: '#fff', 
-                padding: '.2rem .5rem', 
+                padding: '.25rem .6rem', 
                 borderRadius: '6px',
-                fontSize: '.85rem'
+                fontSize: '.85rem',
+                fontWeight: 700,
+                minWidth: '1.5rem'
               }}>
                 {activeCount}
               </span>
             )}
+          </div>
+          <a 
+            href="#/alerts" 
+            className="primary"
+            style={{ 
+              display: 'inline-block',
+              textDecoration: 'none',
+              padding: '.6rem 1.5rem'
+            }}
+          >
+            Visualizza
           </a>
         </div>
       </div>

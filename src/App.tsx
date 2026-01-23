@@ -18,6 +18,7 @@ import HelpPage from './pages/HelpPage'
 import FAQPage from './pages/FAQPage'
 import InfoPage from './pages/InfoPage'
 import ProfilePage from './pages/ProfilePage'
+import UpdateProfilePage from './pages/UpdateProfilePage'
 import WalletPage from './pages/WalletPage'
 import WalletItemPage from './pages/WalletItemPage'
 import { useHashRoute } from './hooks/useHashRoute'
@@ -75,6 +76,8 @@ export default function App() {
         return <InfoPage />
       case '/profile':
         return <ProfilePage />
+      case '/profile/edit':
+        return <UpdateProfilePage />
       case '/wallet':
         return <WalletPage />
       case '/':

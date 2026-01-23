@@ -3,6 +3,10 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 export type AuthUser = {
   email: string
   name?: string
+  phone?: string
+  address?: string
+  birthDate?: string
+  fiscalCode?: string
 }
 
 type AuthContextType = {
@@ -10,6 +14,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>
   register: (email: string, password: string) => Promise<void>
   logout: () => void
+  updateProfile: (data: Partial<AuthUser>) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -51,7 +56,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => setUser(null)
 
-  const value = useMemo(() => ({ user, login, register, logout }), [user])
+  const updateProfile = async (data: Partial<AuthUser>) => {
+    await new Promise(res => setTimeout(res, 500))
+    setUser(prev => prev ? { ...prev, ...data } : null)
+  }
+
+  const value = useMemo(() => ({ user, login, register, logout, updateProfile }), [user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
