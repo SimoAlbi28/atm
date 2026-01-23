@@ -13,7 +13,7 @@ import AlertsPage from './pages/AlertsPage'
 import AlertDetailPage from './pages/AlertDetailPage'
 import ParkingPage from './pages/ParkingPage'
 import AccessibilityPage from './pages/AccessibilityPage'
-import LostAndFoundPage from './pages/LostAndFoundPage'
+import CareersPage from './pages/CareersPage'
 import HelpPage from './pages/HelpPage'
 import FAQPage from './pages/FAQPage'
 import InfoPage from './pages/InfoPage'
@@ -66,8 +66,8 @@ export default function App() {
         return <ParkingPage />
       case '/access':
         return <AccessibilityPage />
-      case '/lost':
-        return <LostAndFoundPage />
+      case '/careers':
+        return <CareersPage />
       case '/help':
         return <HelpPage />
       case '/faq':

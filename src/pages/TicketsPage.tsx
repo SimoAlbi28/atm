@@ -13,8 +13,8 @@ type Ticket = {
 type PurchaseStep = 'idle' | 'processing' | 'success'
 
 export default function TicketsPage() {
-  const { user } = useAuth()
   const { addItem } = useWallet()
+  const { user } = useAuth()
   const tickets: Ticket[] = useMemo(() => ([
     { id: 't1', name: 'Urbano 90 min', price: '€ 2,20', detailId: 'urbano-90' },
     { id: 't2', name: 'Giornaliero', price: '€ 7,60', detailId: 'giornaliero' },
@@ -32,6 +32,7 @@ export default function TicketsPage() {
   const [cvv, setCvv] = useState('')
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [qrCode, setQrCode] = useState<string | null>(null)
   const formRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -76,6 +77,13 @@ export default function TicketsPage() {
         price: selected.price,
         zones: 'Mi1-Mi3'
       })
+      // Recupero il QR appena generato
+      setTimeout(() => {
+        const walletItems = JSON.parse(localStorage.getItem('atm-wallet') || '[]')
+        if (walletItems && walletItems.length > 0) {
+          setQrCode(walletItems[0].qrCode)
+        }
+      }, 100)
     }
     
     setStep('success')
@@ -150,7 +158,7 @@ export default function TicketsPage() {
             </div>
             {error && <p className="tiny" style={{ color: '#ef4444' }}>{error}</p>}
             {step === 'processing' && <p className="tiny">Elaborazione del pagamento, attendi 2 secondi...</p>}
-            {step === 'success' && (
+            {step === 'success' && user && (
               <div style={{ 
                 textAlign: 'center', 
                 padding: '1.5rem', 
@@ -170,9 +178,13 @@ export default function TicketsPage() {
             )}
           </form>
         ) : (
-          <p className="tiny">Seleziona un biglietto per inserire i dati di pagamento e generare il QR.</p>
+          <p className="tiny" style={{ marginTop: '1rem' }}>Seleziona un biglietto per inserire i dati di pagamento e generare il QR.</p>
         )}
       </div>
+
+      {step === 'success' && !user && qrCode && (
+        <FakeQrActions qrCode={qrCode} />
+      )}
 
       <div className="card" style={{ marginTop: '1rem' }}>
         <h3>Dove acquistare</h3>
@@ -184,5 +196,47 @@ export default function TicketsPage() {
         </ul>
       </div>
     </Page>
+  )
+}
+
+// Componenti helper
+function FakeQrActions({ qrCode }: { qrCode: string }) {
+  const [loadingMail, setLoadingMail] = useState(false)
+  const [loadingDownload, setLoadingDownload] = useState(false)
+  const [doneMail, setDoneMail] = useState(false)
+  const [doneDownload, setDoneDownload] = useState(false)
+  return (
+    <div style={{ textAlign: 'center', padding: '1.5rem', background: '#fffbe6', borderRadius: '12px', marginTop: '1rem', border: '1px solid #fde68a' }}>
+      <div style={{ fontSize: '2.5rem', marginBottom: '.5rem' }}>⚠️</div>
+      <h3 style={{ marginBottom: '.5rem' }}>Salva subito il tuo QR code!</h3>
+      <p className="tiny" style={{ marginBottom: '1rem', color: '#b91c1c', fontWeight: 500 }}>
+        Non sei loggato: <b>questo QR code scomparirà appena chiudi o aggiorni la pagina</b>.<br />
+        <span style={{ color: '#dc2626' }}>Salvalo subito facendo uno screenshot, scaricalo o invialo alla tua email.</span>
+      </p>
+      <div style={{ margin: '2rem 0' }}>
+        <img src="/qr.png" alt="QR Code" style={{ width: '180px', height: '180px', display: 'block', margin: '0 auto' }} />
+        <div style={{ fontFamily: 'monospace', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '2px', color: 'var(--text)', marginTop: '.5rem' }}>
+          {qrCode}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1.5rem' }}>
+        <button className="primary" disabled={loadingMail || doneMail} onClick={() => {
+          setLoadingMail(true)
+          setTimeout(() => { setLoadingMail(false); setDoneMail(true) }, 1500)
+        }}>
+          {loadingMail ? 'Invio in corso...' : doneMail ? 'Inviato!' : 'Invia via email'}
+        </button>
+        <button className="secondary" disabled={loadingDownload || doneDownload} onClick={() => {
+          setLoadingDownload(true)
+          setTimeout(() => { setLoadingDownload(false); setDoneDownload(true) }, 1500)
+        }}>
+          {loadingDownload ? 'Download...' : doneDownload ? 'Scaricato!' : 'Scarica QR'}
+        </button>
+      </div>
+      <p className="tiny" style={{ marginTop: '1.5rem', color: '#666' }}>
+        Per conservare il biglietto, fai uno screenshot o accedi per salvarlo nel wallet personale.
+      </p>
+      <a href="#/profile" className="secondary" style={{ textDecoration: 'none', marginTop: '1rem', display: 'inline-block' }}>Accedi o registrati</a>
+    </div>
   )
 }

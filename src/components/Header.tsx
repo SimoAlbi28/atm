@@ -38,7 +38,7 @@ export default function Header() {
           <a href="#/alerts">Avvisi</a>
           <a href="#/parking">Parcheggi e ZTL</a>
           <a href="#/access">Accessibilità</a>
-          <a href="#/lost">Oggetti smarriti</a>
+          <a href="#/careers">Lavora con noi</a>
           <a href="#/faq">FAQ</a>
           <a href="#/info">Info</a>
           <a href="#/help">Assistenza</a>

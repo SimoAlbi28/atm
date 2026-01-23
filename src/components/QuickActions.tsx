@@ -6,7 +6,7 @@ export default function QuickActions() {
     { id: 'qa4', label: 'Mappa rete', anchor: '#/map' },
     { id: 'qa5', label: 'Parcheggi e ZTL', anchor: '#/parking' },
     { id: 'qa6', label: 'Accessibilità', anchor: '#/access' },
-    { id: 'qa7', label: 'Oggetti smarriti', anchor: '#/lost' },
+    { id: 'qa7', label: 'Lavora con noi', anchor: '#/careers' },
     { id: 'qa8', label: 'FAQ', anchor: '#/faq' }
   ]
 

@@ -1,8 +1,10 @@
 import Page from '../components/Page'
 import { useWallet, type WalletItem } from '../hooks/useWallet'
+import { useAuth } from '../hooks/useAuth'
 
 export default function WalletPage() {
   const { items } = useWallet()
+  const { user } = useAuth()
   
   const tickets = items.filter(i => i.type === 'ticket')
   const passes = items.filter(i => i.type === 'pass')
@@ -59,6 +61,26 @@ export default function WalletPage() {
       </div>
     </a>
   )
+
+  if (!user) {
+    return (
+      <Page title="Wallet" intro="Accedi per visualizzare e gestire i tuoi biglietti e abbonamenti digitali.">
+        <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+          <h3>Wallet disponibile solo per utenti registrati</h3>
+          <p style={{ margin: '1rem 0', color: '#b91c1c', fontWeight: 500 }}>
+            Il QR code generato per i biglietti o abbonamenti <b>non sarà più accessibile</b> una volta chiuso il sito.<br />
+            Se non sei loggato, <b>salva subito il QR</b> facendo uno screenshot, scaricandolo o richiedendolo via email.<br />
+            <span style={{ color: '#dc2626' }}>Se chiudi o aggiorni la pagina, il QR andrà perso!</span>
+          </p>
+          <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1.5rem' }}>
+            <a href="#/" className="primary" style={{ textDecoration: 'none' }}>Torna alla home</a>
+            <a href="#/profile" className="secondary" style={{ textDecoration: 'none' }}>Accedi o registrati</a>
+          </div>
+        </div>
+      </Page>
+    )
+  }
 
   return (
     <Page title="Wallet" intro="I tuoi biglietti e abbonamenti acquistati. Clicca per vedere il QR code.">

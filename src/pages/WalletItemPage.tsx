@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import Page from '../components/Page'
 import { useWallet } from '../hooks/useWallet'
+import { useAuth } from '../hooks/useAuth'
 
 export default function WalletItemPage({ itemId }: { itemId: string }) {
   const { getItem, removeItem } = useWallet()
+  const { user } = useAuth()
   const item = getItem(itemId)
   const [showQrModal, setShowQrModal] = useState(false)
   
@@ -52,6 +54,35 @@ export default function WalletItemPage({ itemId }: { itemId: string }) {
     }
   }
 
+  if (!user) {
+    return (
+      <Page title="QR temporaneo" intro="Salva subito il tuo biglietto digitale">
+        <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+          <h3>Attenzione: QR temporaneo</h3>
+          <p style={{ margin: '1rem 0', color: '#b91c1c', fontWeight: 500 }}>
+            Non sei loggato: <b>questo QR code scomparirà appena chiudi o aggiorni la pagina</b>.<br />
+            <span style={{ color: '#dc2626' }}>Salvalo subito facendo uno screenshot, scaricalo o invialo alla tua email.</span>
+          </p>
+          <div style={{ margin: '2rem 0' }}>
+            <img src="/qr.png" alt="QR Code" style={{ width: '180px', height: '180px', display: 'block', margin: '0 auto' }} />
+            <div style={{ fontFamily: 'monospace', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '2px', color: 'var(--text)', marginTop: '.5rem' }}>
+              {item?.qrCode || '---'}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1.5rem' }}>
+            <button className="primary" style={{ opacity: 0.7, cursor: 'not-allowed' }} disabled>Invia via email (demo)</button>
+            <button className="secondary" style={{ opacity: 0.7, cursor: 'not-allowed' }} disabled>Scarica QR (demo)</button>
+          </div>
+          <p className="tiny" style={{ marginTop: '1.5rem', color: '#666' }}>
+            Per conservare il biglietto, fai uno screenshot o accedi per salvarlo nel wallet personale.
+          </p>
+          <a href="#/profile" className="secondary" style={{ textDecoration: 'none', marginTop: '1rem', display: 'inline-block' }}>Accedi o registrati</a>
+        </div>
+      </Page>
+    )
+  }
+  
   return (
     <Page title={item.name} intro={item.type === 'ticket' ? 'Biglietto elettronico' : 'Abbonamento digitale'}>
       {/* Modal QR ingrandito */}
