@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import Page from '../components/Page'
 import { useAuth } from '../hooks/useAuth'
 
@@ -14,109 +14,148 @@ type PassData = {
   requirements?: string
 }
 
-const PASSES_DATA: Record<string, PassData> = {
-  'mensile-urbano': {
-    id: 'mensile-urbano',
-    name: 'Abbonamento Mensile Urbano',
-    price: '€ 39,00',
-    priceNum: 39,
-    duration: '30 giorni',
-    zone: 'Mi1-Mi3 (urbana)',
-    desc: 'L\'abbonamento mensile urbano è valido su tutta la rete ATM all\'interno della zona urbana di Milano (Mi1-Mi3). Include metro, bus, tram e filobus.',
-    benefits: [
-      'Viaggi illimitati per 30 giorni',
-      'Valido su metro, bus, tram, filobus',
-      'Attivazione immediata',
-      'Ricaricabile dall\'app',
-      'Trasferibile su tessera o smartphone'
-    ]
-  },
-  'annuale-urbano': {
-    id: 'annuale-urbano',
-    name: 'Abbonamento Annuale Urbano',
-    price: '€ 330,00',
-    priceNum: 330,
-    duration: '365 giorni',
-    zone: 'Mi1-Mi3 (urbana)',
-    desc: 'L\'abbonamento annuale offre un risparmio significativo rispetto al mensile. Ideale per chi usa quotidianamente i mezzi pubblici.',
-    benefits: [
-      'Risparmio di oltre € 130 rispetto al mensile',
-      'Viaggi illimitati per 365 giorni',
-      'Pagamento rateizzabile',
-      'Valido su tutta la rete urbana',
-      'Priorità per parcheggi di interscambio'
-    ]
-  },
-  'under26': {
-    id: 'under26',
-    name: 'Abbonamento Under 26',
-    price: '€ 22,00/mese',
-    priceNum: 22,
-    duration: '30 giorni',
-    zone: 'Mi1-Mi3 (urbana)',
-    desc: 'Tariffa agevolata per giovani fino a 26 anni. Richiede documento d\'identità valido.',
-    benefits: [
-      'Sconto del 43% sul prezzo standard',
-      'Viaggi illimitati',
-      'Valido su tutta la rete urbana',
-      'Rinnovo semplificato'
-    ],
-    requirements: 'Età inferiore a 26 anni. Richiesto documento d\'identità.'
-  },
-  'over65': {
-    id: 'over65',
-    name: 'Abbonamento Over 65',
-    price: '€ 20,00/mese',
-    priceNum: 20,
-    duration: '30 giorni',
-    zone: 'Mi1-Mi3 (urbana)',
-    desc: 'Tariffa agevolata per pensionati e anziani over 65. Richiede documento d\'identità.',
-    benefits: [
-      'Sconto del 48% sul prezzo standard',
-      'Viaggi illimitati',
-      'Valido su tutta la rete urbana',
-      'Assistenza dedicata'
-    ],
-    requirements: 'Età superiore a 65 anni. Richiesto documento d\'identità.'
-  },
-  'integrato': {
-    id: 'integrato',
-    name: 'Abbonamento Integrato MI1-MI3',
-    price: 'da € 55,00',
-    priceNum: 55,
-    duration: '30 giorni',
-    zone: 'Mi1-Mi3 + extraurbano',
-    desc: 'Abbonamento integrato valido per le zone Mi1, Mi2, Mi3 e collegamenti extraurbani. Ideale per pendolari.',
-    benefits: [
-      'Include treni suburbani',
-      'Valido anche per linee interurbane',
-      'Collegamento con aree limitrofe',
-      'Parcheggi di interscambio inclusi'
-    ]
-  },
-  'mobilita-ridotta': {
-    id: 'mobilita-ridotta',
-    name: 'Abbonamento Mobilità Ridotta',
-    price: 'Gratuito',
-    priceNum: 0,
-    duration: 'Annuale',
-    zone: 'Intera rete',
-    desc: 'Abbonamento gratuito per persone con disabilità certificata. Valido su tutta la rete ATM.',
-    benefits: [
-      'Completamente gratuito',
-      'Valido su tutta la rete',
-      'Accompagnatore gratuito',
-      'Accesso prioritario',
-      'Assistenza dedicata'
-    ],
-    requirements: 'Certificazione di invalidità civile ≥67% o certificazione L.104.'
+const getPassData = (passId: string, zones: string[]): PassData | null => {
+  const maxZone = zones.length > 0 
+    ? Math.max(...zones.map(z => parseInt(z.replace('Mi', '')))) 
+    : 3
+  const minZone = zones.length > 0 
+    ? Math.min(...zones.map(z => parseInt(z.replace('Mi', '')))) 
+    : 1
+  const zoneRange = zones.length > 0 ? `Mi${minZone}-Mi${maxZone}` : 'Mi1-Mi3'
+  const isUrbano = maxZone <= 3
+  
+  const PASSES: Record<string, PassData> = {
+    'mensile-urbano': {
+      id: 'mensile-urbano',
+      name: 'Abbonamento Mensile Urbano',
+      price: '€ 39,00',
+      priceNum: 39,
+      duration: '30 giorni',
+      zone: 'Mi1-Mi3 (urbana)',
+      desc: 'L\'abbonamento mensile urbano è valido su tutta la rete ATM all\'interno della zona urbana di Milano (Mi1-Mi3). Include metro, bus, tram e filobus.',
+      benefits: [
+        'Viaggi illimitati per 30 giorni',
+        'Valido su metro, bus, tram, filobus',
+        'Attivazione immediata',
+        'Ricaricabile dall\'app',
+        'Trasferibile su tessera o smartphone'
+      ]
+    },
+    'annuale-urbano': {
+      id: 'annuale-urbano',
+      name: 'Abbonamento Annuale Urbano',
+      price: '€ 330,00',
+      priceNum: 330,
+      duration: '365 giorni',
+      zone: 'Mi1-Mi3 (urbana)',
+      desc: 'L\'abbonamento annuale offre un risparmio significativo rispetto al mensile. Ideale per chi usa quotidianamente i mezzi pubblici.',
+      benefits: [
+        'Risparmio di oltre € 130 rispetto al mensile',
+        'Viaggi illimitati per 365 giorni',
+        'Pagamento rateizzabile',
+        'Valido su tutta la rete urbana',
+        'Priorità per parcheggi di interscambio'
+      ]
+    },
+    'under26': {
+      id: 'under26',
+      name: 'Abbonamento Under 26',
+      price: isUrbano ? '€ 22,00/mese' : `€ ${22 + (maxZone - 3) * 8},00/mese`,
+      priceNum: isUrbano ? 22 : 22 + (maxZone - 3) * 8,
+      duration: '30 giorni',
+      zone: zoneRange,
+      desc: `Tariffa agevolata per giovani fino a 26 anni. Valido per zone ${zoneRange}. Richiede documento d\'identità valido.`,
+      benefits: [
+        'Sconto del 43% sul prezzo standard',
+        'Viaggi illimitati',
+        `Valido su zone ${zoneRange}`,
+        'Rinnovo semplificato'
+      ],
+      requirements: 'Età inferiore a 26 anni. Richiesto documento d\'identità.'
+    },
+    'over65': {
+      id: 'over65',
+      name: 'Abbonamento Over 65',
+      price: isUrbano ? '€ 20,00/mese' : `€ ${20 + (maxZone - 3) * 7},00/mese`,
+      priceNum: isUrbano ? 20 : 20 + (maxZone - 3) * 7,
+      duration: '30 giorni',
+      zone: zoneRange,
+      desc: `Tariffa agevolata per pensionati e anziani over 65. Valido per zone ${zoneRange}. Richiede documento d\'identità.`,
+      benefits: [
+        'Sconto del 48% sul prezzo standard',
+        'Viaggi illimitati',
+        `Valido su zone ${zoneRange}`,
+        'Assistenza dedicata'
+      ],
+      requirements: 'Età superiore a 65 anni. Richiesto documento d\'identità.'
+    },
+    'integrato': {
+      id: 'integrato',
+      name: `Abbonamento Mensile Integrato ${zoneRange}`,
+      price: `€ ${39 + (maxZone - 3) * 16},00`,
+      priceNum: 39 + (maxZone - 3) * 16,
+      duration: '30 giorni',
+      zone: zoneRange,
+      desc: `Abbonamento integrato valido per le zone ${zoneRange}. Include treni suburbani e collegamenti extraurbani. Ideale per pendolari.`,
+      benefits: [
+        'Include treni suburbani',
+        'Valido anche per linee interurbane',
+        `Collegamento con tutte le zone ${zoneRange}`,
+        'Parcheggi di interscambio inclusi'
+      ]
+    },
+    'annuale-integrato': {
+      id: 'annuale-integrato',
+      name: `Abbonamento Annuale Integrato ${zoneRange}`,
+      price: `€ ${Math.round((39 + (maxZone - 3) * 16) * 10 * 0.85)},00`,
+      priceNum: Math.round((39 + (maxZone - 3) * 16) * 10 * 0.85),
+      duration: '365 giorni',
+      zone: zoneRange,
+      desc: `Abbonamento annuale integrato per zone ${zoneRange}. Massimo risparmio per chi viaggia quotidianamente sulle tratte extraurbane.`,
+      benefits: [
+        'Risparmio del 15% rispetto al mensile',
+        'Viaggi illimitati per 365 giorni',
+        'Include treni suburbani',
+        `Valido su tutte le zone ${zoneRange}`,
+        'Parcheggi di interscambio inclusi'
+      ]
+    },
+    'mobilita-ridotta': {
+      id: 'mobilita-ridotta',
+      name: 'Abbonamento Mobilità Ridotta',
+      price: 'Gratuito',
+      priceNum: 0,
+      duration: 'Annuale',
+      zone: 'Intera rete',
+      desc: 'Abbonamento gratuito per persone con disabilità certificata. Valido su tutta la rete ATM.',
+      benefits: [
+        'Completamente gratuito',
+        'Valido su tutta la rete',
+        'Accompagnatore gratuito',
+        'Accesso prioritario',
+        'Assistenza dedicata'
+      ],
+      requirements: 'Certificazione di invalidità civile ≥67% o certificazione L.104.'
+    }
   }
+  
+  return PASSES[passId] || null
 }
 
 type PurchaseStep = 'idle' | 'processing' | 'success'
 
 export default function PassDetailPage({ passId }: { passId: string }) {
-  const pass = PASSES_DATA[passId]
+  // Estrai le zone dall'URL
+  const zones = useMemo(() => {
+    const hash = window.location.hash
+    const zonesMatch = hash.match(/zones=([^&]+)/)
+    if (zonesMatch) {
+      return zonesMatch[1].split(',').filter(z => z.startsWith('Mi'))
+    }
+    return []
+  }, [])
+  
+  const pass = useMemo(() => getPassData(passId, zones), [passId, zones])
   const { user } = useAuth()
   const [step, setStep] = useState<PurchaseStep>('idle')
   const [cardName, setCardName] = useState('')
