@@ -18,8 +18,11 @@ import HelpPage from './pages/HelpPage'
 import FAQPage from './pages/FAQPage'
 import InfoPage from './pages/InfoPage'
 import ProfilePage from './pages/ProfilePage'
+import WalletPage from './pages/WalletPage'
+import WalletItemPage from './pages/WalletItemPage'
 import { useHashRoute } from './hooks/useHashRoute'
 import { AuthProvider } from './hooks/useAuth'
+import { WalletProvider } from './hooks/useWallet'
 
 export default function App() {
   const route = useHashRoute()
@@ -27,20 +30,24 @@ export default function App() {
   function renderRoute() {
     // Detail routes
     if (route.startsWith('/line/')) {
-      const lineId = route.replace('/line/', '')
+      const lineId = route.replace('/line/', '').split('?')[0]
       return <LineDetailPage lineId={lineId} />
     }
     if (route.startsWith('/pass/')) {
-      const passId = route.replace('/pass/', '')
+      const passId = route.replace('/pass/', '').split('?')[0]
       return <PassDetailPage passId={passId} />
     }
     if (route.startsWith('/alert/')) {
-      const alertId = route.replace('/alert/', '')
+      const alertId = route.replace('/alert/', '').split('?')[0]
       return <AlertDetailPage alertId={alertId} />
     }
     if (route.startsWith('/ticket/')) {
-      const ticketId = route.replace('/ticket/', '')
+      const ticketId = route.replace('/ticket/', '').split('?')[0]
       return <TicketDetailPage ticketId={ticketId} />
+    }
+    if (route.startsWith('/wallet/')) {
+      const itemId = route.replace('/wallet/', '').split('?')[0]
+      return <WalletItemPage itemId={itemId} />
     }
 
     switch (route) {
@@ -68,6 +75,8 @@ export default function App() {
         return <InfoPage />
       case '/profile':
         return <ProfilePage />
+      case '/wallet':
+        return <WalletPage />
       case '/':
       default:
         return <HomePage />
@@ -76,11 +85,13 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <div className="app">
-        <Header />
-        {renderRoute()}
-        <Footer />
-      </div>
+      <WalletProvider>
+        <div className="app">
+          <Header />
+          {renderRoute()}
+          <Footer />
+        </div>
+      </WalletProvider>
     </AuthProvider>
   )
 }

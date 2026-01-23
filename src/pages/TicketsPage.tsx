@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Page from '../components/Page'
 import { useAuth } from '../hooks/useAuth'
+import { useWallet } from '../hooks/useWallet'
 
 type Ticket = {
   id: string
@@ -9,10 +10,11 @@ type Ticket = {
   detailId: string
 }
 
-type PurchaseStep = 'idle' | 'processing' | 'qr'
+type PurchaseStep = 'idle' | 'processing' | 'success'
 
 export default function TicketsPage() {
   const { user } = useAuth()
+  const { addItem } = useWallet()
   const tickets: Ticket[] = useMemo(() => ([
     { id: 't1', name: 'Urbano 90 min', price: '€ 2,20', detailId: 'urbano-90' },
     { id: 't2', name: 'Giornaliero', price: '€ 7,60', detailId: 'giornaliero' },
@@ -30,8 +32,6 @@ export default function TicketsPage() {
   const [cvv, setCvv] = useState('')
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
-  const [emailSent, setEmailSent] = useState(false)
   const formRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -41,8 +41,6 @@ export default function TicketsPage() {
   const startPurchase = (ticket: Ticket) => {
     setSelected(ticket)
     setStep('idle')
-    setQrDataUrl(null)
-    setEmailSent(false)
     setError(null)
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -68,11 +66,19 @@ export default function TicketsPage() {
     }
     setError(null)
     setStep('processing')
-    setQrDataUrl(null)
-    setEmailSent(false)
     await new Promise(res => setTimeout(res, 2000))
-    setQrDataUrl('/qr.png')
-    setStep('qr')
+    
+    // Aggiungi al wallet
+    if (selected) {
+      addItem({
+        type: 'ticket',
+        name: selected.name,
+        price: selected.price,
+        zones: 'Mi1-Mi3'
+      })
+    }
+    
+    setStep('success')
   }
 
   return (
@@ -144,22 +150,22 @@ export default function TicketsPage() {
             </div>
             {error && <p className="tiny" style={{ color: '#ef4444' }}>{error}</p>}
             {step === 'processing' && <p className="tiny">Elaborazione del pagamento, attendi 2 secondi...</p>}
-            {step === 'qr' && qrDataUrl && (
-              <div className="qr-wrap">
-                <img src={qrDataUrl} alt="QR del biglietto" style={{ maxWidth: '240px' }} />
-                <div style={{ display: 'flex', gap: '.5rem', flexWrap: 'wrap', marginTop: '.5rem' }}>
-                  <a className="primary" href={qrDataUrl} download={`biglietto-${selected.id}.svg`} style={{ textAlign: 'center' }}>
-                    Scarica QR
-                  </a>
-                  <button
-                    className="secondary"
-                    type="button"
-                    onClick={() => setEmailSent(true)}
-                  >
-                    Invia via email
-                  </button>
-                </div>
-                {emailSent && <p className="tiny" style={{ marginTop: '.35rem' }}>Inviato a {email}. Controlla la tua casella.</p>}
+            {step === 'success' && (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '1.5rem', 
+                background: '#dcfce7', 
+                borderRadius: '12px',
+                marginTop: '1rem'
+              }}>
+                <div style={{ fontSize: '3rem', marginBottom: '.5rem' }}>✅</div>
+                <h3 style={{ marginBottom: '.5rem' }}>Biglietto acquistato!</h3>
+                <p className="tiny" style={{ marginBottom: '1rem' }}>
+                  Il tuo biglietto <strong>{selected?.name}</strong> è stato aggiunto al wallet.
+                </p>
+                <a href="#/wallet" className="primary" style={{ textDecoration: 'none' }}>
+                  Vai al Wallet per utilizzarlo
+                </a>
               </div>
             )}
           </form>

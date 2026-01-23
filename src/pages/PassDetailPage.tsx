@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import Page from '../components/Page'
 import { useAuth } from '../hooks/useAuth'
+import { useWallet } from '../hooks/useWallet'
 
 type PassData = {
   id: string
@@ -145,10 +146,11 @@ const getPassData = (passId: string, zones: string[]): PassData | null => {
 type PurchaseStep = 'idle' | 'processing' | 'success'
 
 export default function PassDetailPage({ passId }: { passId: string }) {
-  // Estrai le zone dall'URL
+  // Estrai le zone dall'URL (formato: #/pass/id?zones=Mi1,Mi2,Mi3)
   const zones = useMemo(() => {
     const hash = window.location.hash
-    const zonesMatch = hash.match(/zones=([^&]+)/)
+    // Cerca sia ?zones= che &zones=
+    const zonesMatch = hash.match(/[?&]zones=([^&]+)/)
     if (zonesMatch) {
       return zonesMatch[1].split(',').filter(z => z.startsWith('Mi'))
     }
@@ -157,6 +159,7 @@ export default function PassDetailPage({ passId }: { passId: string }) {
   
   const pass = useMemo(() => getPassData(passId, zones), [passId, zones])
   const { user } = useAuth()
+  const { addItem } = useWallet()
   const [step, setStep] = useState<PurchaseStep>('idle')
   const [cardName, setCardName] = useState('')
   const [cardNumber, setCardNumber] = useState('')
@@ -200,6 +203,16 @@ export default function PassDetailPage({ passId }: { passId: string }) {
     setError(null)
     setStep('processing')
     await new Promise(res => setTimeout(res, 2000))
+    
+    // Aggiungi al wallet
+    addItem({
+      type: 'pass',
+      name: pass.name,
+      price: pass.price,
+      zones: pass.zone,
+      duration: pass.duration
+    })
+    
     setStep('success')
   }
 
@@ -270,19 +283,19 @@ export default function PassDetailPage({ passId }: { passId: string }) {
             </div>
           ) : step === 'success' ? (
             <div className="card">
-              <div style={{ textAlign: 'center', padding: '1rem' }}>
+              <div style={{ textAlign: 'center', padding: '1.5rem' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '.5rem' }}>✅</div>
-                <h3>Abbonamento attivato!</h3>
-                <p className="tiny" style={{ margin: '.5rem 0' }}>
+                <h3>Abbonamento acquistato!</h3>
+                <p className="tiny" style={{ margin: '.75rem 0' }}>
+                  Il tuo abbonamento <strong>{pass.name}</strong> è stato aggiunto al wallet.
+                </p>
+                <p className="tiny" style={{ marginBottom: '1rem', color: 'var(--muted)' }}>
                   {pass.priceNum > 0 
-                    ? `Abbiamo inviato la conferma a ${email}` 
+                    ? `Conferma inviata a ${email}` 
                     : 'La tua richiesta è stata registrata'}
                 </p>
-                <p className="tiny">
-                  Puoi visualizzare il tuo abbonamento nell'area profilo.
-                </p>
-                <a href="#/profile" className="primary" style={{ display: 'inline-block', marginTop: '1rem' }}>
-                  Vai al profilo
+                <a href="#/wallet" className="primary" style={{ display: 'inline-block', textDecoration: 'none' }}>
+                  Vai al Wallet per utilizzarlo
                 </a>
               </div>
             </div>
